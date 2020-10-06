@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import {connect} from 'react-redux'
+import {getPokemon} from '../redux/pokeReducer'
 
 class Dashboard extends Component {
     constructor(props){
@@ -9,38 +11,42 @@ class Dashboard extends Component {
         }
     }
 
-    getPokemon = () => {
-        const rand = Math.ceil(Math.random() * 151);
+    // getPokemon = () => {
+    //     const rand = Math.ceil(Math.random() * 151);
 
-        axios.get(`https://pokeapi.co/api/v2/pokemon/${rand}`)
-        .then(res => {
-            this.setState({pokemon: res.data})
-        })
-        .catch(err => console.log(err));
-    }
+    //     axios.get(`https://pokeapi.co/api/v2/pokemon/${rand}`)
+    //     .then(res => {
+    //         this.setState({pokemon: res.data})
+    //     })
+    //     .catch(err => console.log(err));
+    // }
 
     componentDidMount(){
-        this.getPokemon();
+        this.props.getPokemon();
     }
 
     render(){
         const {pokemon} = this.state;
+        // console.log(this.props)
 
         return (
             <main className='dashboard'>
                 <h1>Your Pokemon</h1>
-                {pokemon.name
-                ? (
+             
                     <section>
-                        <img src={pokemon.sprites.front_default} alt={pokemon.name}/>
-                        <h3>{pokemon.name}</h3>
-                        <button onClick={this.getPokemon}>Change Pokemon</button>
+                        
+                        <img src={this.props.pokeReducer.pokemon.data?.sprites.front_default} alt={this.props.pokeReducer.pokemon.data?.name}/>
+                        <h3>{this.props.pokeReducer.pokemon.data?.name}</h3>
+                        <button onClick={this.props.getPokemon}>Change Pokemon</button>
                     </section>
-                )
-                : null}
+              
             </main>
         )
     }
 }
-
-export default Dashboard;
+const mapStateToProps = reduxState => {
+    return {
+        pokeReducer: reduxState.pokeReducer
+    }
+}
+export default connect(mapStateToProps, {getPokemon})(Dashboard);
